@@ -1,0 +1,98 @@
+/* 划词小卡片 - 豆包风格深色胶囊 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: transparent;
+  height: 100%;
+  overflow: hidden;
+  font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+  user-select: none;
+}
+
+.hidden { display: none !important; }
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(7px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* —— 胶囊 —— */
+.pill {
+  height: 100vh; width: 100vw;
+  background: rgba(26, 27, 32, .97);
+  border-radius: 18px;
+  display: flex; align-items: center;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, .38), 0 0 0 1px rgba(255, 255, 255, .06) inset;
+  animation: card-in .14s ease-out;
+}
+.pill-btn {
+  flex: 1; height: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  border: none; background: transparent; color: #fff;
+  font-size: 13.5px; font-family: inherit; cursor: pointer;
+  border-radius: 18px;
+  transition: background .13s;
+}
+.pill-btn:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.pill-btn:hover { background: rgba(255, 255, 255, .09); }
+.pill-btn svg { flex: none; opacity: .92; }
+.pill-btn.saved { color: #6ee7a8; }
+.pill-btn .spin {
+  width: 14px; height: 14px; flex: none;
+  border: 2px solid rgba(255, 255, 255, .25); border-top-color: #fff;
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+.p-main .spin {
+  display: inline-block; width: 15px; height: 15px; margin-right: 7px; vertical-align: -3px;
+  border: 2px solid rgba(255, 255, 255, .25); border-top-color: #fff;
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.sep { width: 1px; height: 20px; background: rgba(255, 255, 255, .14); flex: none; }
+
+/* —— 结果面板 —— */
+.panel {
+  height: 100vh; width: 100vw;
+  background: rgba(26, 27, 32, .97);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  color: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .4), 0 0 0 1px rgba(255, 255, 255, .06) inset;
+  animation: card-in .14s ease-out;
+}
+.p-head { display: flex; align-items: center; gap: 8px; }
+.p-word { font-size: 19px; font-weight: 700; word-break: break-all; }
+.p-pho { color: #9aa0ae; font-size: 12.5px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.p-icon {
+  border: none; background: transparent; color: #cfd3dc; cursor: pointer;
+  font-size: 13px; padding: 4px 6px; border-radius: 7px; flex: none;
+}
+.p-icon:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.p-main {
+  font-size: 14.5px; line-height: 1.6; color: #eef0f4;
+  background: rgba(255, 255, 255, .06);
+  border-radius: 10px; padding: 10px 12px;
+  overflow-y: auto; word-break: break-word;
+}
+.p-main .provider { display: block; margin-top: 6px; font-size: 11px; color: #8b91a0; }
+.p-main .example { display: block; margin-top: 6px; font-size: 12px; color: #9aa0ae; font-style: italic; }
+.p-senses { font-size: 12px; color: #b9bec9; line-height: 1.65; overflow-y: auto; flex: 1; }
+.p-senses div { overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.p-foot { display: flex; gap: 10px; }
+.p-save {
+  flex: 1; border: none; cursor: pointer; font-family: inherit;
+  background: linear-gradient(135deg, #5b6cf5, #8b5cf6);
+  color: #fff; font-size: 13.5px; border-radius: 11px; padding: 10px 0;
+  transition: filter .13s;
+}
+.p-save:hover { filter: brightness(1.08); }
+.p-save.saved { background: rgba(110, 231, 168, .16); color: #6ee7a8; cursor: default; }
+.p-copy {
+  border: 1px solid rgba(255, 255, 255, .16); background: transparent; cursor: pointer;
+  color: #cfd3dc; font-size: 13px; border-radius: 11px; padding: 10px 16px; font-family: inherit;
+}
+.p-copy:hover { background: rgba(255, 255, 255, .08); }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .18); border-radius: 6px; }

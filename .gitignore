@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.log
+
+# 同步服务器运行时数据(含密钥与用户数据,严禁入库)
+server/data/
+
+# Electron 打包产物 / 系统杂项
+out/
+.DS_Store
+Thumbs.db
+
+# ZCode 本地工具数据(不入库)
+.zcode/

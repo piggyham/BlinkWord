@@ -1,0 +1,19 @@
+{
+  "name": "blinkword",
+  "productName": "翻译小卡片",
+  "version": "0.1.0",
+  "description": "划词翻译小卡片 + 单词本 + 背单词桌面应用",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "demo": "electron . --demo-popup"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.4.11"
+  },
+  "dependencies": {
+    "ts-fsrs": "^5.4.2",
+    "uiohook-napi": "^1.2.0"
+  }
+}

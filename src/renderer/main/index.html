@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>翻译小卡片</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="logo"><span class="logo-badge">卡</span><span class="logo-text">翻译小卡片</span></div>
+    <nav id="nav">
+      <button class="nav-btn active" data-view="book"><i>📚</i>单词本</button>
+      <button class="nav-btn" data-view="review"><i>🎯</i>背单词</button>
+      <button class="nav-btn" data-view="stats"><i>📊</i>统计</button>
+      <button class="nav-btn" data-view="account"><i>👤</i>账号</button>
+      <button class="nav-btn" data-view="settings"><i>⚙️</i>设置</button>
+    </nav>
+    <div class="side-foot">
+      <div class="due-pill">今日待学 <b id="side-due">0</b> 词</div>
+    </div>
+  </aside>
+
+  <main id="content">
+    <!-- 单词本 -->
+    <section id="view-book" class="view">
+      <header class="view-head"><h1>单词本</h1><span id="book-count" class="muted"></span></header>
+      <div class="book-toolbar">
+        <input id="add-input" type="text" placeholder="输入单词或词组,回车添加…">
+        <button id="add-btn" class="btn primary">＋ 添加</button>
+        <input id="search-input" type="text" placeholder="🔍 搜索单词 / 释义">
+      </div>
+      <div id="book-filters" class="filters">
+        <button class="chip active" data-f="all">全部</button>
+        <button class="chip" data-f="due">待复习</button>
+        <button class="chip" data-f="learning">学习中</button>
+        <button class="chip" data-f="mastered">已掌握</button>
+      </div>
+      <div id="book-empty" class="empty hidden">
+        <div class="empty-emoji">🗂️</div>
+        <p class="empty-title">单词本还是空的</p>
+        <p class="muted">在任意应用里选中文字 → 弹出小卡片 → 点「存储」,<br>也可以直接用上方输入框手动添加。</p>
+      </div>
+      <div id="book-list" class="word-grid"></div>
+    </section>
+
+    <!-- 背单词 -->
+    <section id="view-review" class="view hidden">
+      <header class="view-head"><h1>背单词</h1></header>
+      <div id="review-idle" class="review-center">
+        <div class="review-hero card">
+          <div class="hero-emoji">🎯</div>
+          <h2 id="review-due-text">今日待学 0 词</h2>
+          <p class="muted">按 FSRS 记忆算法安排复习:答对隔更久再见,答错很快重现;<br>重复记录过的重点词优先出现。</p>
+          <p id="review-hint" class="muted warn hidden">💡 单词本释义还不多,去「设置 → 词库」下载一个词库,即可解锁四选一题型。</p>
+          <div class="goal-row">每日学习量
+            <select id="goal-select">
+              <option value="5">5 词</option><option value="10">10 词</option>
+              <option value="20">20 词</option><option value="30">30 词</option>
+            </select>
+          </div>
+          <button id="start-review" class="btn primary big">开始学习</button>
+        </div>
+      </div>
+      <div id="review-session" class="hidden">
+        <div class="session-top">
+          <div class="progress"><div id="progress-bar"></div></div>
+          <span id="progress-text" class="muted"></span>
+          <button id="quit-session" class="btn ghost small">结束</button>
+        </div>
+        <div id="review-card" class="card review-card"></div>
+      </div>
+      <div id="review-done" class="hidden review-center">
+        <div class="review-hero card">
+          <div class="hero-emoji">🎉</div>
+          <h2 id="done-title">本轮完成</h2>
+          <p id="done-sub" class="muted"></p>
+          <div class="row-btns">
+            <button id="again-btn" class="btn primary">再来一轮</button>
+            <button id="done-back" class="btn ghost">返回</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 统计 -->
+    <section id="view-stats" class="view hidden">
+      <header class="view-head"><h1>统计</h1></header>
+      <div id="stat-cards" class="stat-grid"></div>
+      <div class="card chart-card">
+        <h3>未来 7 天复习安排</h3>
+        <div id="due-chart" class="due-chart"></div>
+      </div>
+    </section>
+
+    <!-- 账号与同步:自建服务器 / 坚果云 WebDAV 两种后端 -->
+    <section id="view-account" class="view hidden">
+      <header class="view-head"><h1>账号与同步</h1><span class="muted">单词本多端同步:自建服务器 或 坚果云网盘</span></header>
+      <div class="acct-group">
+        <div class="sync-card-head">
+          <h3>自建服务器</h3>
+          <span id="acct-active-badge" class="badge hidden">当前同步方式</span>
+          <button id="acct-set-active" class="btn mini hidden">设为当前同步方式</button>
+        </div>
+        <div id="acct-logged-out" class="card set-card acct-card">
+          <div class="acct-tabs">
+            <button id="tab-login" class="chip active">登录</button>
+            <button id="tab-register" class="chip">注册</button>
+          </div>
+          <label class="set-row col"><span>服务器地址</span>
+            <input id="acct-server" type="text" placeholder="http://127.0.0.1:7788"></label>
+          <label class="set-row col"><span>用户名</span>
+            <input id="acct-user" type="text" placeholder="2-24 位字母 / 数字 / 下划线"></label>
+          <label class="set-row col"><span>密码</span>
+            <input id="acct-pass" type="password" placeholder="至少 6 位"></label>
+          <div class="acct-submit-row">
+            <button id="acct-submit" class="btn primary">登录</button>
+            <span id="acct-msg" class="muted"></span>
+          </div>
+          <p class="muted">需先运行「启动同步服务器.bat」(或把 server/ 放到局域网电脑/NAS/云服务器);在多台设备上填同一服务器地址并登录同一账号,即可互相同步。</p>
+        </div>
+        <div id="acct-logged-in" class="card set-card acct-card hidden">
+          <div class="acct-me">
+            <span class="avatar" id="acct-avatar">?</span>
+            <div>
+              <div class="acct-name" id="acct-name"></div>
+              <div class="muted small" id="acct-server-line"></div>
+            </div>
+          </div>
+          <p class="muted" id="acct-sync-line"></p>
+          <div class="row-btns left">
+            <button id="acct-sync-btn" class="btn primary">立即同步</button>
+            <button id="acct-logout" class="btn">退出登录</button>
+          </div>
+          <p class="muted">登录期间,单词本的任何改动(划词存词、复习进度、重要度)都会在约 5 秒后自动同步。</p>
+        </div>
+      </div>
+
+      <div class="acct-group">
+        <div class="sync-card-head">
+          <h3>坚果云 WebDAV</h3>
+          <span id="webdav-active-badge" class="badge hidden">当前同步方式</span>
+          <button id="webdav-set-active" class="btn mini hidden">设为当前同步方式</button>
+        </div>
+        <div id="webdav-form" class="card set-card acct-card">
+          <label class="set-row col"><span>账号邮箱</span>
+            <input id="wd-user" type="text" placeholder="you@example.com"></label>
+          <label class="set-row col"><span>应用密码</span>
+            <input id="wd-pass" type="password" placeholder="坚果云网页端「账户信息 → 安全选项 → 添加应用密码」"></label>
+          <label class="set-row col"><span>同步目录(可选)</span>
+            <input id="wd-dir" type="text" placeholder="/translate-card/"></label>
+          <div class="acct-submit-row">
+            <button id="wd-save" class="btn primary">保存并连接</button>
+            <button id="wd-test" class="btn">测试连接</button>
+            <span id="wd-msg" class="muted"></span>
+          </div>
+          <p class="muted">词库以单个 JSON 文件存在你自己的坚果云网盘里,无需自建服务器、不经过第三方;多台设备填同一账号即可互相同步(合并规则与自建服务器一致,不会互相覆盖)。</p>
+        </div>
+        <div id="webdav-info" class="card set-card acct-card hidden">
+          <div class="acct-me">
+            <span class="avatar" id="webdav-avatar">☁</span>
+            <div>
+              <div class="acct-name" id="wd-name"></div>
+              <div class="muted small" id="wd-dir-line"></div>
+            </div>
+          </div>
+          <p class="muted" id="wd-sync-line"></p>
+          <div class="row-btns left">
+            <button id="wd-sync-btn" class="btn primary">立即同步</button>
+            <button id="wd-disconnect" class="btn">断开</button>
+          </div>
+          <p class="muted">连接期间,单词本的任何改动都会在约 5 秒后自动同步;断开只清除本机保存的应用密码,云端文件保留。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 设置 -->
+    <section id="view-settings" class="view hidden">
+      <header class="view-head"><h1>设置</h1></header>
+      <div class="card set-card">
+        <h3>划词翻译</h3>
+        <label class="set-row"><span>启用划词小卡片</span><input type="checkbox" id="set-capture" class="switch"></label>
+        <label class="set-row"><span>触发方式</span>
+          <select id="set-mode">
+            <option value="auto">鼠标划词自动弹出</option>
+            <option value="hotkey">选中后按热键弹出</option>
+          </select></label>
+        <label class="set-row"><span>热键</span>
+          <select id="set-hotkey">
+            <option>Alt+Q</option><option>Alt+T</option>
+            <option>Ctrl+Alt+Q</option><option>Ctrl+Alt+T</option>
+          </select></label>
+        <p id="capture-warn" class="muted warn hidden"></p>
+        <p class="muted">取词以系统无障碍接口(UI Automation)直读选区为主,不占用你的剪贴板;仅个别不支持该接口的应用会临时借用剪贴板模拟复制,并在约 1 秒内自动恢复。</p>
+      </div>
+      <div class="card set-card svc-card">
+        <h3>翻译服务 <span class="muted small">(从上到下依次尝试,第一个成功者生效)</span></h3>
+        <div id="svc-list"></div>
+        <div class="row-btns left">
+          <button id="svc-clear-cache-btn" class="btn ghost small">清除翻译缓存</button>
+        </div>
+        <p class="muted">免 key:微软翻译、MyMemory。LLM 类(DeepSeek/智谱/Kimi/Ollama 等)质量更好但稍慢,一次返回译文+音标+释义;DeepSeek 约每百万 token 1~2 元,翻译有本地缓存,同词只调一次。Key 只保存在本机数据文件中。</p>
+      </div>
+      <div class="card set-card">
+        <h3>词库 · 四选一干扰项</h3>
+        <div id="dict-list"></div>
+        <p class="muted">来自开源项目 qwerty-learner,按需从 CDN 下载;仅用作背单词四选一题型的干扰项来源,<b>不会加入单词本</b>。删除词库文件即可移除。</p>
+      </div>
+      <div class="card set-card">
+        <h3>学习</h3>
+        <label class="set-row"><span>每日学习量</span>
+          <select id="set-goal">
+            <option value="5">5 词</option><option value="10">10 词</option>
+            <option value="20">20 词</option><option value="30">30 词</option>
+          </select></label>
+      </div>
+      <div class="card set-card">
+        <h3>数据</h3>
+        <div class="row-btns left">
+          <button id="export-btn" class="btn">导出备份 (JSON)</button>
+          <button id="import-btn" class="btn">导入备份</button>
+        </div>
+        <p class="muted">数据当前保存在本机;备份文件可用于换机迁移,云同步上线后也可作为本地快照。</p>
+      </div>
+      <div class="card set-card">
+        <h3>即将到来 🚧</h3>
+        <p class="muted roadmap">
+          · 云同步:登录账号后,单词本与学习进度多端同步<br>
+          · 鸿蒙 HarmonyOS 版:手机上随时背单词<br>
+          <span class="dim">(数据结构已为云同步预留字段,规划详见 README)</span>
+        </p>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="toast" class="hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>

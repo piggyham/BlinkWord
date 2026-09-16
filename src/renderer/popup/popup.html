@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>小卡片</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- 胶囊态:参考豆包划词工具条 -->
+  <div id="pill" class="pill hidden">
+    <button id="btn-translate" class="pill-btn">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+        <path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
+      </svg>
+      <span>翻译</span>
+    </button>
+    <div class="sep"></div>
+    <button id="btn-save" class="pill-btn">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+        <path d="M17 3H7a2 2 0 0 0-2 2v16l7-3 7 3V5a2 2 0 0 0-2-2zm-2 9h-2v2h-2v-2H9v-2h2V8h2v2h2v2z"/>
+      </svg>
+      <span>存储</span>
+    </button>
+  </div>
+
+  <!-- 面板态:翻译结果 -->
+  <div id="panel" class="panel hidden">
+    <div class="p-head">
+      <span class="p-word" id="p-word"></span>
+      <span class="p-pho" id="p-pho"></span>
+      <button class="p-icon" id="p-speak" title="朗读">🔊</button>
+      <button class="p-icon" id="p-close" title="关闭">✕</button>
+    </div>
+    <div class="p-main" id="p-main"></div>
+    <div class="p-senses" id="p-senses"></div>
+    <div class="p-foot">
+      <button class="p-save" id="p-save">＋ 存入单词本</button>
+      <button class="p-copy" id="p-copy">复制</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
