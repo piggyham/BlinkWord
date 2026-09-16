@@ -278,6 +278,25 @@ async function e2eAccount() {
   } catch (e) { console.log('[e2e-acct] fail:', e.message); }
 }
 
+/** E2E 自检:截图背单词四选一界面(仅 CARD_E2E=1 时;需要有待学词与已下载词库) */
+async function e2eReview() {
+  try {
+    const wc = mainWin.webContents;
+    await wc.executeJavaScript("document.querySelector('[data-view=review]').click()");
+    await sleep(400);
+    await wc.executeJavaScript("document.querySelector('#start-review').click()");
+    await sleep(1800); // 等干扰项合并(词库抽取)
+    const info = await wc.executeJavaScript(`(() => {
+      const card = document.querySelector('#review-card');
+      return { prompt: (card.querySelector('.rc-prompt') || {}).innerText || '', opts: [...card.querySelectorAll('.rc-opt')].length };
+    })()`);
+    console.log('[e2e-review]', JSON.stringify(info));
+    e2eShot(mainWin, 'capture-review.png', 0);
+    await sleep(500);
+    await wc.executeJavaScript("document.querySelector('#quit-session').click()");
+  } catch (e) { console.log('[e2e-review] fail:', e.message); }
+}
+
 /** E2E 自检:设置页(服务池卡片 + 词库卡片)与四选一干扰项;结束后还原用户原设置 */
 async function e2eSettings() {
   const backup = JSON.parse(JSON.stringify(store.settings.services || {}));
@@ -733,7 +752,7 @@ function init() {
       } catch (e) { console.warn('[cloud] 启动同步失败:', e.message); }
     }, 3000);
   }
-  if (DEMO) setTimeout(() => { showDemo(); if (process.env.CARD_E2E) { e2eRun(); e2eAccount().then(e2eSettings); } }, 900);
+  if (DEMO) setTimeout(() => { showDemo(); if (process.env.CARD_E2E) { e2eRun(); e2eAccount().then(() => e2eSettings()).then(e2eReview); } }, 900);
   console.log('[translate-card] ready; 划词钩子可用:', capture.available, '; 数据目录:', userData);
 }
 

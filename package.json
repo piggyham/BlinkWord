@@ -6,7 +6,8 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "demo": "electron . --demo-popup"
+    "demo": "electron . --demo-popup",
+    "test": "node test/webdav.test.js"
   },
   "license": "MIT",
   "devDependencies": {
