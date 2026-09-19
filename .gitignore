@@ -12,3 +12,18 @@ Thumbs.db
 
 # ZCode 本地工具数据(不入库)
 .zcode/
+
+# ---- HarmonyOS (harmony/ 为指向 D:\tcard-harmony 的目录联接) ----
+harmony/entry/build/
+harmony/.hvigor/
+harmony/oh_modules/
+harmony/.cxx/
+harmony/local.properties
+harmony/tools/arkts-build/
+
+# 签名材料与冒烟中间产物(仅保留脚本)
+harmony/tools/signing/*
+!harmony/tools/signing/sign.sh
+!harmony/tools/signing/README.md
+harmony/tools/*.jpeg
+harmony/tools/layout*.json

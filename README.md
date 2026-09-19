@@ -20,6 +20,24 @@
 |---|---|
 | ![设置](docs/screenshots/settings.png) | ![账号](docs/screenshots/account.png) |
 
+## 鸿蒙版 HarmonyOS（手机背单词） 📱
+
+ArkTS 原生实现的伴生 App，**独立开源仓库:[BlinkWord-Harmony](https://github.com/piggyham/BlinkWord-Harmony)**。与 PC 端共用同一个坚果云文件 `translate-card/wordbook.json`，两端进度按单词合并、只增不覆盖：
+
+- **每天打开自动同步**，背完一组自动写回，PC 端可继续复习；
+- **百词斩式背单词**：释义四选一（词库自动生成干扰项），词太少时翻卡自评，答错队尾重现；
+- **FSRS 记忆算法**：与 PC 端 ts-fsrs@5.4.2 默认行为逐公式对齐，对拍测试 47/47 通过；
+- 零第三方依赖（系统 http/fs/preferences/Asset Store），兼容 HarmonyOS 5.0+（API 12+）。
+
+| 今日页 | 背单词 | 完成并写回同步 |
+|---|---|---|
+| ![今日页](docs/screenshots/harmony/today.jpeg) | ![背单词](docs/screenshots/harmony/review.jpeg) | ![完成](docs/screenshots/harmony/review-done.jpeg) |
+
+| 词本 | 设置（坚果云） | 真机实拍 |
+|---|---|---|
+| ![词本](docs/screenshots/harmony/wordbook.jpeg) | ![设置](docs/screenshots/harmony/settings.jpeg) | ![真机](docs/screenshots/harmony/phone-today.jpeg) |
+
+
 ## 为什么做这个
 
 市面上的工具要么只做划词翻译、要么只做背单词,「阅读时随手收词 → 科学复习」的闭环总是断的:
@@ -165,7 +183,7 @@ docs/screenshots/         # README 截图(由应用内 E2E 自检生成)
 - [x] 翻译服务池(LLM / 传统翻译双轨)
 - [x] 多端同步(自建服务器 / 坚果云 WebDAV)
 - [ ] 官方托管云账号(免自建)
-- [ ] 鸿蒙 HarmonyOS 版(方案 A:ArkTS 原生;方案 B:WebView 复用 Web 渲染层,见 `harmony/`)
+- [x] 鸿蒙 HarmonyOS 版(ArkTS 原生,独立仓库:[BlinkWord-Harmony](https://github.com/piggyham/BlinkWord-Harmony))
 - [ ] 打包安装程序(electron-builder)与自动更新
 
 ## 常见问题
