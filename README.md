@@ -74,13 +74,25 @@ ArkTS 原生实现的伴生 App，**独立开源仓库:[BlinkWord-Harmony](https
 ### 3. 托盘常驻
 关闭主窗口后应用驻留系统托盘(划词功能持续可用);托盘菜单可打开单词本、临时关闭划词、退出。
 
-## 快速开始
+## 下载与安装
+
+**普通用户(推荐)**:到 [Releases](https://github.com/piggyham/BlinkWord/releases) 下载最新版:
+
+| 文件 | 说明 |
+|---|---|
+| `BlinkWord-Setup-x.x.x.exe` | **一键安装包**(推荐):双击即装,免管理员,自动创建桌面/开始菜单快捷方式并启动;卸载走系统"应用"设置 |
+| `BlinkWord-Portable-x.x.x.exe` | **绿色免安装版**:单个 exe,双击即用(首次启动自解压稍慢),适合 U 盘/临时环境 |
+
+> 未做代码签名证书,首次运行 Windows SmartScreen 可能提示"更多信息 → 仍要运行";介意的话可从源码自行打包。
+
+**从源码运行 / 开发**:
 
 ```bash
 # 方式一:双击 启动.bat
 # 方式二:命令行
 npm install   # 首次(已配置国内镜像则加 --registry=https://registry.npmmirror.com)
-npm start
+npm start     # 开发运行
+npm run dist  # 本地打包安装包(dist/ 下,同样两个产物)
 ```
 
 调试弹卡 UI(无需真实划词):`npm run demo`,会在屏幕中央弹出示例卡片 "resilience"。
@@ -182,9 +194,10 @@ docs/screenshots/         # README 截图(由应用内 E2E 自检生成)
 - [x] FSRS 记忆算法 + 四选一题型
 - [x] 翻译服务池(LLM / 传统翻译双轨)
 - [x] 多端同步(自建服务器 / 坚果云 WebDAV)
-- [ ] 官方托管云账号(免自建)
 - [x] 鸿蒙 HarmonyOS 版(ArkTS 原生,独立仓库:[BlinkWord-Harmony](https://github.com/piggyham/BlinkWord-Harmony))
-- [ ] 打包安装程序(electron-builder)与自动更新
+- [x] Windows 安装包(NSIS 一键安装 + 绿色版,见 Releases)
+- [ ] 官方托管云账号(免自建)
+- [ ] 代码签名与自动更新(electron-updater)
 
 ## 常见问题
 

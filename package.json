@@ -7,11 +7,41 @@
   "scripts": {
     "start": "electron .",
     "demo": "electron . --demo-popup",
-    "test": "node test/webdav.test.js"
+    "test": "node test/webdav.test.js",
+    "dist": "electron-builder --win"
   },
   "license": "MIT",
+  "build": {
+    "appId": "com.piggyham.blinkword",
+    "productName": "翻译小卡片",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "BlinkWord-Setup-${version}.exe"
+    },
+    "portable": {
+      "artifactName": "BlinkWord-Portable-${version}.exe"
+    }
+  },
   "devDependencies": {
-    "electron": "^33.4.11"
+    "electron": "^33.4.11",
+    "electron-builder": "^26.15.3"
   },
   "dependencies": {
     "ts-fsrs": "^5.4.2",
