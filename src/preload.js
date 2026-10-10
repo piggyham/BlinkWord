@@ -16,7 +16,7 @@ function speakLocal(text, lang) {
 contextBridge.exposeInMainWorld('cardAPI', {
   // —— 单词本 / 学习 ——
   list: () => ipcRenderer.invoke('book:list'),
-  add: (word) => ipcRenderer.invoke('book:add', word),
+  add: (word, extra) => ipcRenderer.invoke('book:add', word, extra),
   remove: (id) => ipcRenderer.invoke('book:remove', id),
   reset: (id) => ipcRenderer.invoke('book:reset', id),
   fetchExample: (id) => ipcRenderer.invoke('book:fetch-example', id),
@@ -29,6 +29,7 @@ contextBridge.exposeInMainWorld('cardAPI', {
   env: () => ipcRenderer.invoke('env:info'),
   servicesMeta: () => ipcRenderer.invoke('services:meta'),
   serviceTest: (id, cfg) => ipcRenderer.invoke('services:test', id, cfg),
+  translateText: (text) => ipcRenderer.invoke('translate:text', text),
   dictsList: () => ipcRenderer.invoke('dict:list'),
   dictDownload: (id) => ipcRenderer.invoke('dict:download', id),
   dictRemove: (id) => ipcRenderer.invoke('dict:remove', id),

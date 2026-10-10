@@ -405,6 +405,55 @@ function setupDicts() {
   });
 }
 
+/* ———————————————— 输入翻译 ———————————————— */
+
+function setupTranslate() {
+  const $input = $('#tr-input'), $go = $('#tr-go'), $dir = $('#tr-dir');
+  let last = null; // { text, result }
+
+  const isChinese = s => /[\u4e00-\u9fff]/.test(s);
+
+  function renderResult(r) {
+    $('#tr-trans').textContent = r.text || '';
+    $('#tr-pho').textContent = r.phonetic || '';
+    $('#tr-senses').innerHTML = (r.senses || []).slice(0, 3).map(s => `<div>• ${esc(s)}</div>`).join('');
+    $('#tr-example').textContent = r.example ? `例:${r.example}` : '';
+    $('#tr-provider').textContent = r.provider ? `via ${r.provider}` : '';
+    $('#tr-result').classList.remove('hidden');
+  }
+
+  async function go() {
+    const text = $input.value.trim();
+    if (!text) { $dir.textContent = '请输入内容'; return; }
+    $dir.textContent = '翻译中…';
+    $go.disabled = true;
+    const r = await window.cardAPI.translateText(text);
+    $go.disabled = false;
+    if (!r.ok) { $dir.textContent = '✗ ' + r.error; return; }
+    last = { text, result: r.result };
+    $dir.textContent = isChinese(text) ? '中 → 英' : '英 → 中';
+    renderResult(r.result);
+    $('#tr-speak-src').disabled = false;
+  }
+
+  $go.addEventListener('click', go);
+  $input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go(); }
+  });
+  $('#tr-speak-src').addEventListener('click', () => { if ($input.value.trim()) window.cardAPI.speak($input.value.trim()); });
+  $('#tr-speak-dst').addEventListener('click', () => { if (last) window.cardAPI.speak(last.result.text); });
+  $('#tr-save').addEventListener('click', async () => {
+    if (!last) return;
+    const r = last.result;
+    const saved = await window.cardAPI.add(last.text, {
+      translation: r.text, phonetic: r.phonetic || '', senses: r.senses || [], example: r.example || ''
+    });
+    if (!saved) return;
+    showToast(saved.already ? `「${saved.word}」已在单词本,重要度提升至 ×${saved.saveCount || 1}` : `已存入「${saved.word}」,进入复习计划`);
+    loadBook();
+  });
+}
+
 function setupSettings() {
   const save = patch => window.cardAPI.settingsSet(patch);
   $('#set-capture').addEventListener('change', e => save({ captureEnabled: e.target.checked }));
@@ -591,6 +640,7 @@ function setupNav() {
     if (btn.dataset.view === 'review') refreshDue();
     if (btn.dataset.view === 'settings') loadSettings();
     if (btn.dataset.view === 'account') refreshAccount();
+    if (btn.dataset.view === 'translate') setTimeout(() => $('#tr-input').focus(), 60);
   });
 }
 
@@ -663,6 +713,7 @@ async function init() {
   setupReview();
   setupSettings();
   setupAccount();
+  setupTranslate();
   setupWebdav();
   await loadSettings();
   await loadBook();

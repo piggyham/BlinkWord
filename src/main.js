@@ -297,6 +297,47 @@ async function e2eReview() {
   } catch (e) { console.log('[e2e-review] fail:', e.message); }
 }
 
+/** E2E 自检:输入翻译(中→英、英→中、存入单词本) */
+async function e2eTranslate() {
+  try {
+    const wc = mainWin.webContents;
+    await wc.executeJavaScript("document.querySelector('[data-view=translate]').click()");
+    await sleep(300);
+    // 中 → 英
+    await wc.executeJavaScript(`(() => {
+      const el = document.querySelector('#tr-input');
+      el.value = '苹果';
+      el.dispatchEvent(new Event('input'));
+      document.querySelector('#tr-go').click();
+    })()`);
+    await sleep(9000);
+    console.log('[e2e-tr] 中→英:', JSON.stringify(await wc.executeJavaScript(`(() => ({
+      dir: document.querySelector('#tr-dir').innerText,
+      trans: document.querySelector('#tr-trans').innerText,
+      provider: document.querySelector('#tr-provider').innerText
+    }))()`)));
+    // 英 → 中(单词,应带音标/释义),随后存入单词本
+    await wc.executeJavaScript(`(() => {
+      const el = document.querySelector('#tr-input');
+      el.value = 'serendipity';
+      document.querySelector('#tr-go').click();
+    })()`);
+    await sleep(9000);
+    console.log('[e2e-tr] 英→中:', JSON.stringify(await wc.executeJavaScript(`(() => ({
+      dir: document.querySelector('#tr-dir').innerText,
+      trans: document.querySelector('#tr-trans').innerText.slice(0, 30),
+      pho: document.querySelector('#tr-pho').innerText,
+      senses: document.querySelector('#tr-senses').innerText.slice(0, 60)
+    }))()`)));
+    await wc.executeJavaScript("document.querySelector('#tr-save').click()");
+    await sleep(1200);
+    console.log('[e2e-tr] saved:', JSON.stringify(store.findWord('serendipity') && { trans: store.findWord('serendipity').translation.slice(0, 20), senses: (store.findWord('serendipity').senses || []).length }));
+    e2eShot(mainWin, 'capture-translate.png', 0);
+    await sleep(500);
+    console.log('[e2e-tr] done');
+  } catch (e) { console.log('[e2e-tr] fail:', e.message); }
+}
+
 /** E2E 自检:设置页(服务池卡片 + 词库卡片)与四选一干扰项;结束后还原用户原设置 */
 async function e2eSettings() {
   const backup = JSON.parse(JSON.stringify(store.settings.services || {}));
@@ -537,9 +578,9 @@ function rebuildTrayMenu() {
 function registerIpc() {
   // 单词本 / 学习
   ipcMain.handle('book:list', () => store.all());
-  ipcMain.handle('book:add', (e, word) => {
-    const info = store.addWord(String(word || '').trim(), {});
-    if (info && !info.already) enrichAsync(info.word);
+  ipcMain.handle('book:add', (e, word, extra) => {
+    const info = store.addWord(String(word || '').trim(), extra || {});
+    if (info && !info.already && !info.translation) enrichAsync(info.word);
     return info;
   });
   ipcMain.handle('book:remove', (e, id) => { store.remove(id); return { ok: true }; });
@@ -576,6 +617,14 @@ function registerIpc() {
   // 翻译服务池:元信息(渲染层画卡片)与「测试连接」;以及清除翻译缓存
   ipcMain.handle('services:meta', () => servicesMeta());
   ipcMain.handle('services:test', (e, id, cfg) => testService(id, cfg || {}));
+  /** 输入翻译:单词或中文,服务池自动识别方向 */
+  ipcMain.handle('translate:text', async (e, text) => {
+    try {
+      return { ok: true, result: await translator.translate(String(text || '').trim()) };
+    } catch (err) {
+      return { ok: false, error: String(err.message || err) };
+    }
+  });
   ipcMain.handle('translate:clear-cache', () => { translator.clearCache(); return { ok: true }; });
   // 词库(四选一干扰项)
   ipcMain.handle('dict:list', () => dicts.list());
@@ -752,7 +801,7 @@ function init() {
       } catch (e) { console.warn('[cloud] 启动同步失败:', e.message); }
     }, 3000);
   }
-  if (DEMO) setTimeout(() => { showDemo(); if (process.env.CARD_E2E) { e2eRun(); e2eAccount().then(() => e2eSettings()).then(e2eReview); } }, 900);
+  if (DEMO) setTimeout(() => { showDemo(); if (process.env.CARD_E2E) { e2eRun(); e2eAccount().then(() => e2eSettings()).then(e2eReview).then(e2eTranslate); } }, 900);
   console.log('[translate-card] ready; 划词钩子可用:', capture.available, '; 数据目录:', userData);
 }
 
